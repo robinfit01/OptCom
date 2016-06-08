@@ -35,6 +35,7 @@
 #include <cstdlib>
 #include <iostream>
 #include <fstream>
+#include <cmath>
 #include "setupapi.h"
 #include "Ntddser.h"
 //#include <WindowsX.h>
@@ -52,8 +53,8 @@
 #define RECVBUFFLENGHT 256
 #define WAIT_TIME 100
 #define SEND_WAIT_TIME 10
-#define NORMSLEEPFACTOR 2
-#define LASTSLEEPFACTOR 11
+#define NORMSLEEPFACTOR 3
+#define LASTSLEEPFACTOR 12
 
 #ifndef _AFX_NO_OLE_SUPPORT
 #include <afxdtctl.h>           // MFC 对 Internet Explorer 4 公共控件的支持

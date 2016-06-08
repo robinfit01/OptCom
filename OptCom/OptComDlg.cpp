@@ -88,6 +88,109 @@ void COptComDlg::UpdateCombox()
 	}
 }
 
+void COptComDlg::InitCBRCombox()
+{
+	CComboBox* CurCombox = (CComboBox*)GetDlgItem(IDC_CBRCOMBO);
+	CString ComBoxStr;
+	int strLenght = 0;
+	int CBRList[29] = { 300, 600, 1200, 1800, 2400, 4000, 4800, 7200, 9600, 14400, 16000, 19200, 28800, 38400,
+					51200, 56000, 57600, 64000, 76800, 115200, 128000, 153600, 230400, 250000, 256000,
+					460800, 500000, 576000, 921600 };
+	
+
+	for (int i = 0; i < 29; i++)
+	{
+		ComBoxStr.Format(L"%d", CBRList[i]);
+		CurCombox->AddString(ComBoxStr);
+		CurCombox->SetItemData(i, CBRList[i]);
+		strLenght = ComBoxStr.GetLength()>strLenght ? ComBoxStr.GetLength() : strLenght;
+	}
+	CurCombox->SetDroppedWidth(strLenght * 6 + 3);
+	CurCombox->SetMinVisibleItems(10);
+	CurCombox->SetCurSel(8);
+}
+
+void COptComDlg::InitCodingModeCombox()
+{
+	CComboBox* CurCombox = (CComboBox*)GetDlgItem(IDC_CODECOMBO);
+	
+	CurCombox->AddString(L"None");
+	CurCombox->AddString(L"Compressed only");
+	CurCombox->AddString(L"FEC only");
+	CurCombox->AddString(L"Both");
+	CurCombox->SetCurSel(0);
+
+	CurCombox->SetDroppedWidth(CString(L"Compressed only").GetLength() * 6 + 12);
+#ifdef DEBUG
+	afxDump << CString(L"Compressed only").GetLength();
+#endif // DEBUG
+}
+
+void COptComDlg::ResetInfoStatic()
+{
+	GetDlgItem(IDC_INFOSTATIC)->SetWindowTextW(L"");
+	((CButton*)GetDlgItem(IDC_SENDBUTTON))->SetWindowTextW(L"Start");
+}
+
+void COptComDlg::UpdateProgress(ULONGLONG finish, ULONGLONG total)
+{
+	CProgressCtrl * CurProgressCtrl = (CProgressCtrl*)GetDlgItem(IDC_PROGRESS1);
+	CString str;
+	int unit = 0;
+
+	CurProgressCtrl->SetPos(finish*100/total);
+	str.Format(L"%0.1f%%\n", finish / (double)total * 100);
+	
+	while (finish>1024)
+	{
+		unit++;
+		finish = finish / 1024;
+	}
+	switch (unit)
+	{
+	case 0:
+		str.Format(L"%s%dB/", str,finish);
+		break;
+	case 1:
+		str.Format(L"%s%dKB/", str,finish);
+		break;
+	case 2:
+		str.Format(L"%s%dMB/", str,finish);
+		break;
+	case 3:
+		str.Format(L"%s%dGB/", str,finish);
+		break;
+	default:
+		break;
+	}
+
+	unit = 0;
+	while (total>1024)
+	{
+		unit++;
+		total = total / 1024;
+	}
+	switch (unit)
+	{
+	case 0:
+		str.Format(L"%s%dB", str,total);
+		break;
+	case 1:
+		str.Format(L"%s%dKB", str,total);
+		break;
+	case 2:
+		str.Format(L"%s%dMB", str,total);
+		break;
+	case 3:
+		str.Format(L"%s%dGB", str,total);
+		break;
+	default:
+		break;
+	}
+
+	GetDlgItem(IDC_INFOSTATIC)->SetWindowTextW(str);
+}
+
 BEGIN_MESSAGE_MAP(COptComDlg, CDialogEx)
 	ON_WM_SYSCOMMAND()
 	ON_WM_PAINT()
@@ -98,6 +201,7 @@ BEGIN_MESSAGE_MAP(COptComDlg, CDialogEx)
 	ON_BN_CLICKED(IDC_SENDBUTTON,&COptComDlg::OnBnClickedSend)
 	ON_BN_CLICKED(IDC_BROWSEBUTTON, &COptComDlg::OnBnClickedBrowse)
 	ON_CBN_DROPDOWN(IDC_PORTCOMBO,&COptComDlg::OnCbnClickedCOMport)
+	ON_CBN_SELCHANGE(IDC_CBRCOMBO, &COptComDlg::OnCbnSelchangeCbrcombo)
 END_MESSAGE_MAP()
 
 
@@ -136,7 +240,10 @@ BOOL COptComDlg::OnInitDialog()
 	SerialCom scom;
 
 	UpdateCombox();
+	InitCBRCombox();
+	InitCodingModeCombox();
 
+	GetDlgItem(IDC_INFOSTATIC)->SetWindowTextW(L"");
 	((CButton*)GetDlgItem(IDC_RADIO1))->SetCheck(TRUE);
 
 	((CEdit*)GetDlgItem(IDC_FILEDIR))->SetWindowTextW(L"\\\\Mac\\Home\\Desktop\\test.txt");
@@ -204,9 +311,10 @@ UINT COptComDlg::ComListenThreadProc(LPVOID pParam)
 
 	if (((CButton*)pCOptComDlg->GetDlgItem(IDC_MODERADIO1))->GetCheck() == BST_CHECKED)
 	{
-		
+		pCOptComDlg->GetDlgItem(IDC_INFOSTATIC)->SetWindowTextW(L"Starting\n...");
 		if (!pCOptComDlg->scom.InitCom()) {
 			pCOptComDlg->MessageBox(L"COM port open error!");
+			pCOptComDlg->ResetInfoStatic();
 			return 1;
 		}
 		else
@@ -225,6 +333,7 @@ UINT COptComDlg::ComListenThreadProc(LPVOID pParam)
 	#endif // DEBUG
 					// targetFile.SeekToBegin();
 					pCOptComDlg->scom.WriteData((unsigned char*)(&FileLength), sizeof(ULONGLONG));
+					pCOptComDlg->UpdateProgress(fs.tellg(), FileLength);
 					UINT BufferLength = 0;
 					while (s_bExit)
 					{
@@ -240,6 +349,7 @@ UINT COptComDlg::ComListenThreadProc(LPVOID pParam)
 						// pCOptComDlg->scom.WriteData((unsigned char*)(buff.GetBuffer()),BufferLength);
 						pCOptComDlg->scom.WriteData(pBuffer,BufferLength);
 						free(pBuffer);
+						pCOptComDlg->UpdateProgress(fs.tellg(), FileLength);
 	#ifdef DEBUG
 						afxDump << BufferLength * 1000*8 / pCOptComDlg->scom.GetBaud();
 	#endif // DEBUG
@@ -254,6 +364,7 @@ UINT COptComDlg::ComListenThreadProc(LPVOID pParam)
 					pCOptComDlg->MessageBox(L"File open error!");
 				}
 				pCOptComDlg->scom.ClosePort();
+				((CButton*)pCOptComDlg->GetDlgItem(IDC_SENDBUTTON))->SetWindowTextW(L"Start");
 				return 0;
 			}
 			catch (CFileException *e)
@@ -262,6 +373,7 @@ UINT COptComDlg::ComListenThreadProc(LPVOID pParam)
 				errStr.Format(L"File error! Error code:%d", e->m_cause);
 				pCOptComDlg->MessageBox(errStr);
 				pCOptComDlg->scom.ClosePort();
+				pCOptComDlg->ResetInfoStatic();
 				return 1;
 			}
 		}
@@ -269,8 +381,10 @@ UINT COptComDlg::ComListenThreadProc(LPVOID pParam)
 	}
 	else
 	{
+		pCOptComDlg->GetDlgItem(IDC_INFOSTATIC)->SetWindowTextW(L"Listening\n...");
 		if (!pCOptComDlg->scom.InitCom()) {
 			pCOptComDlg->MessageBox(L"COM port open error!");
+			pCOptComDlg->ResetInfoStatic();
 			return 1;
 		}
 		else
@@ -284,6 +398,7 @@ UINT COptComDlg::ComListenThreadProc(LPVOID pParam)
 				{
 					if (!s_bExit) {
 						pCOptComDlg->scom.ClosePort();
+						pCOptComDlg->ResetInfoStatic();
 						return 0;
 					}
 				}
@@ -305,6 +420,7 @@ UINT COptComDlg::ComListenThreadProc(LPVOID pParam)
 				UINT COMBufferLength = 0;
 				// LPWSTR pBuffer;
 				// targetFile.SeekToBegin();
+				pCOptComDlg->UpdateProgress(fs.tellg(), FileLength);
 				while (s_bExit)
 				{
 					COMBufferLength = pCOptComDlg->scom.GetBytesInCOM();
@@ -327,12 +443,14 @@ UINT COptComDlg::ComListenThreadProc(LPVOID pParam)
 					free(pBuffer);
 					// targetFile.Write(pBuffer, COMBufferLength);
 					// targetFile.Flush();
-					FileLength -= COMBufferLength;
-					if (FileLength <= 0)break;
+					
+					pCOptComDlg->UpdateProgress(fs.tellg(), FileLength);
+					if ((UINT)fs.tellg()>= FileLength)break;
 				}
 				fs.close();
 				// targetFile.Close();
 				pCOptComDlg->scom.ClosePort();
+				((CButton*)pCOptComDlg->GetDlgItem(IDC_SENDBUTTON))->SetWindowTextW(L"Start");
 				return 0;
 			}
 			catch (CFileException *e)
@@ -341,6 +459,7 @@ UINT COptComDlg::ComListenThreadProc(LPVOID pParam)
 				errStr.Format(L"File error! Error code:%d", e->m_cause);
 				pCOptComDlg->MessageBox(errStr);
 				pCOptComDlg->scom.ClosePort();
+				pCOptComDlg->ResetInfoStatic();
 				return 1;
 			}
 		}
@@ -373,7 +492,17 @@ UINT COptComDlg::OnNcHitTest(CPoint point)
 void COptComDlg::OnBnClickedSend()
 {
 	s_bExit = 1;
-	this->pComListenThread = AfxBeginThread(ComListenThreadProc,this, THREAD_PRIORITY_NORMAL);
+	CButton * CurButton = (CButton*)GetDlgItem(IDC_SENDBUTTON);
+	if (CurButton->GetWindowTextLengthW() == 5)
+	{
+		CurButton->SetWindowTextW(L"Stop");
+		this->pComListenThread = AfxBeginThread(ComListenThreadProc,this, THREAD_PRIORITY_NORMAL);
+	}
+	else
+	{
+		s_bExit = 0;
+	}
+
 }
 
 void COptComDlg::OnBnClickedBrowse()
@@ -401,3 +530,14 @@ void COptComDlg::OnCbnClickedCOMport()
 {
 	UpdateCombox();
 }
+
+
+void COptComDlg::OnCbnSelchangeCbrcombo()
+{
+	// TODO: 在此添加控件通知处理程序代码
+	scom.SetBaud(((CComboBox*)GetDlgItem(IDC_CBRCOMBO))->GetItemData(((CComboBox*)GetDlgItem(IDC_CBRCOMBO))->GetCurSel()));
+
+}
+
+
+

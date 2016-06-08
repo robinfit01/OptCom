@@ -27,6 +27,10 @@ private:
 
 public:
 	void UpdateCombox();
+	void InitCBRCombox();
+	void InitCodingModeCombox();
+	void ResetInfoStatic();
+	void UpdateProgress(ULONGLONG finish, ULONGLONG total);
 	SerialCom* getSerialComPtr();
 	static UINT ComListenThreadProc(LPVOID pParam);
 
@@ -48,4 +52,6 @@ protected:
 	DECLARE_MESSAGE_MAP()
 public:
 	
+	afx_msg void OnCbnSelchangeCbrcombo();
+
 };
