@@ -33,25 +33,10 @@
     <ClInclude Include="Resource.h">
       <Filter>头文件</Filter>
     </ClInclude>
-    <ClInclude Include="memory.h">
-      <Filter>头文件</Filter>
-    </ClInclude>
-    <ClInclude Include="Config.h">
-      <Filter>头文件</Filter>
-    </ClInclude>
-    <ClInclude Include="Comm.h">
-      <Filter>头文件</Filter>
-    </ClInclude>
-    <ClInclude Include="DataProcessor.h">
-      <Filter>头文件</Filter>
-    </ClInclude>
-    <ClInclude Include="utils.h">
-      <Filter>头文件</Filter>
-    </ClInclude>
-    <ClInclude Include="list.h">
-      <Filter>头文件</Filter>
-    </ClInclude>
     <ClInclude Include="SerialCom.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="SerialPort.h">
       <Filter>头文件</Filter>
     </ClInclude>
   </ItemGroup>
@@ -71,19 +56,7 @@
     <ClCompile Include="SerialCom.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="memory.cpp">
-      <Filter>源文件</Filter>
-    </ClCompile>
-    <ClCompile Include="list.cpp">
-      <Filter>源文件</Filter>
-    </ClCompile>
-    <ClCompile Include="DataProcessor.cpp">
-      <Filter>源文件</Filter>
-    </ClCompile>
-    <ClCompile Include="Config.cpp">
-      <Filter>源文件</Filter>
-    </ClCompile>
-    <ClCompile Include="Comm.cpp">
+    <ClCompile Include="SerialPort.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
   </ItemGroup>
