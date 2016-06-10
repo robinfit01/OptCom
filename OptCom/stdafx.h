@@ -32,6 +32,12 @@
 #include <assert.h>
 #include <Windows.h>
 #include <stdio.h>
+#include <cstdlib>
+#include <iostream>
+#include <fstream>
+#include <cmath>
+#include "setupapi.h"
+#include "Ntddser.h"
 //#include <WindowsX.h>
 
 #pragma comment(lib, "setupapi.lib")
@@ -39,17 +45,16 @@
 #include <initguid.h>
 
 //Com library
-#include "list.h"
-#include "memory.h"
-#include "utils.h"
-#include "DataProcessor.h"
-//#include "Thunk.h"
-#include "Config.h"
-#include "Comm.h"
+#include "SerialPort.h"
 #include "SerialCom.h"
-//#include "TextEditor.h"
 
-#define SPRINTF_BUFFER_LENGTH 20
+
+#define SENDBUFFLENGHT 1024
+#define RECVBUFFLENGHT 256
+#define WAIT_TIME 100
+#define SEND_WAIT_TIME 10
+#define NORMSLEEPFACTOR 3
+#define LASTSLEEPFACTOR 12
 
 #ifndef _AFX_NO_OLE_SUPPORT
 #include <afxdtctl.h>           // MFC 对 Internet Explorer 4 公共控件的支持
