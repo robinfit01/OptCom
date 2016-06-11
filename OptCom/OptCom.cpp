@@ -10,6 +10,9 @@
 #define new DEBUG_NEW
 #endif
 
+#ifdef _WIN32
+HINSTANCE g_hInstance = 0;
+#endif
 
 // COptComApp
 

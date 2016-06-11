@@ -32,7 +32,8 @@ public:
 	void ResetInfoStatic();
 	void UpdateProgress(ULONGLONG finish, ULONGLONG total);
 	SerialCom* getSerialComPtr();
-	static UINT ComListenThreadProc(LPVOID pParam);
+	static UINT ComListenThreadProcWith7zEncoding(LPVOID pParam);
+	static UINT ComListenThreadProcWithoutEncoding(LPVOID pParam);
 
 // й╣ож
 protected:
@@ -54,4 +55,6 @@ public:
 	
 	afx_msg void OnCbnSelchangeCbrcombo();
 
+	afx_msg void OnCbnEditchangeCbrcombo();
+	virtual BOOL PreTranslateMessage(MSG* pMsg);
 };

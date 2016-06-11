@@ -48,6 +48,10 @@
 #include "SerialPort.h"
 #include "SerialCom.h"
 
+//Coder library
+#include "CPP/Common/Common.h"
+#include "Coder.h"
+
 
 #define SENDBUFFLENGHT 1024
 #define RECVBUFFLENGHT 256

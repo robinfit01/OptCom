@@ -185,6 +185,21 @@
     <Text Include="ReadMe.txt" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Coder.h" />
+    <ClInclude Include="CPP\7zip\Common\FileStreams.h" />
+    <ClInclude Include="CPP\Common\IntToString.h" />
+    <ClInclude Include="CPP\Common\MyString.h" />
+    <ClInclude Include="CPP\Common\MyVector.h" />
+    <ClInclude Include="CPP\Common\NewHandler.h" />
+    <ClInclude Include="CPP\Common\StringConvert.h" />
+    <ClInclude Include="CPP\Common\Wildcard.h" />
+    <ClInclude Include="CPP\Windows\DLL.h" />
+    <ClInclude Include="CPP\Windows\FileDir.h" />
+    <ClInclude Include="CPP\Windows\FileFind.h" />
+    <ClInclude Include="CPP\Windows\FileIO.h" />
+    <ClInclude Include="CPP\Windows\FileName.h" />
+    <ClInclude Include="CPP\Windows\PropVariant.h" />
+    <ClInclude Include="CPP\Windows\PropVariantConv.h" />
     <ClInclude Include="OptCom.h" />
     <ClInclude Include="OptComDlg.h" />
     <ClInclude Include="Resource.h" />
@@ -194,6 +209,21 @@
     <ClInclude Include="targetver.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="Coder.cpp" />
+    <ClCompile Include="CPP\7zip\Common\FileStreams.cpp" />
+    <ClCompile Include="CPP\Common\IntToString.cpp" />
+    <ClCompile Include="CPP\Common\MyString.cpp" />
+    <ClCompile Include="CPP\Common\MyVector.cpp" />
+    <ClCompile Include="CPP\Common\NewHandler.cpp" />
+    <ClCompile Include="CPP\Common\StringConvert.cpp" />
+    <ClCompile Include="CPP\Common\Wildcard.cpp" />
+    <ClCompile Include="CPP\Windows\DLL.cpp" />
+    <ClCompile Include="CPP\Windows\FileDir.cpp" />
+    <ClCompile Include="CPP\Windows\FileFind.cpp" />
+    <ClCompile Include="CPP\Windows\FileIO.cpp" />
+    <ClCompile Include="CPP\Windows\FileName.cpp" />
+    <ClCompile Include="CPP\Windows\PropVariant.cpp" />
+    <ClCompile Include="CPP\Windows\PropVariantConv.cpp" />
     <ClCompile Include="OptCom.cpp" />
     <ClCompile Include="OptComDlg.cpp" />
     <ClCompile Include="SerialCom.cpp" />
