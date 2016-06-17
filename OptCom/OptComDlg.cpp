@@ -134,53 +134,129 @@ void COptComDlg::UpdateProgress(ULONGLONG finish, ULONGLONG total)
 {
 	CProgressCtrl * CurProgressCtrl = (CProgressCtrl*)GetDlgItem(IDC_PROGRESS1);
 	CString str;
+	CString temp;
+	DOUBLE outputLength;
 	int unit = 0;
 
 	CurProgressCtrl->SetPos(finish*100/total);
 	str.Format(L"%0.1f%%\n", finish / (double)total * 100);
 	
+	outputLength = finish;
 	while (finish>1024)
 	{
 		unit++;
+		outputLength = finish / (DOUBLE)1024;
 		finish = finish / 1024;
+		
 	}
+
 	switch (unit)
 	{
 	case 0:
-		str.Format(L"%s%dB/", str,finish);
+		temp.Format(L"%f", outputLength);
+		if (outputLength >= 100)
+		{
+			str.Format(L"%s%.3sB/", str, temp);
+		}
+		else
+		{
+			str.Format(L"%s%.4sB/", str, temp);
+		}
+		
 		break;
 	case 1:
-		str.Format(L"%s%dKB/", str,finish);
+		temp.Format(L"%f", outputLength);
+		if (outputLength >= 100)
+		{
+			str.Format(L"%s%.3sKB/", str, temp);
+		}
+		else
+		{
+			str.Format(L"%s%.4sKB/", str, temp);
+		}
 		break;
 	case 2:
-		str.Format(L"%s%dMB/", str,finish);
+		temp.Format(L"%f", outputLength);
+		
+		if (outputLength >= 100)
+		{
+			str.Format(L"%s%.3sMB/", str, temp);
+		}
+		else
+		{
+			str.Format(L"%s%.4sMB/", str, temp);
+		};
 		break;
 	case 3:
-		str.Format(L"%s%dGB/", str,finish);
+		temp.Format(L"%f", outputLength);
+		if (outputLength >= 100)
+		{
+			str.Format(L"%s%.3sGB/", str, temp);
+		}
+		else
+		{
+			str.Format(L"%s%.4sGB/", str, temp);
+		}
 		break;
 	default:
 		break;
 	}
 
 	unit = 0;
+	outputLength = total;
 	while (total>1024)
 	{
 		unit++;
+		outputLength = total / (DOUBLE)1024;
 		total = total / 1024;
 	}
 	switch (unit)
 	{
 	case 0:
-		str.Format(L"%s%dB", str,total);
+		temp.Format(L"%f", outputLength);
+		if (outputLength >= 100)
+		{
+			str.Format(L"%s%.3sB", str, temp);
+		}
+		else
+		{
+			str.Format(L"%s%.4sB", str, temp);
+		}
+
 		break;
 	case 1:
-		str.Format(L"%s%dKB", str,total);
+		temp.Format(L"%f", outputLength);
+		if (outputLength >= 100)
+		{
+			str.Format(L"%s%.3sKB", str, temp);
+		}
+		else
+		{
+			str.Format(L"%s%.4sKB", str, temp);
+		}
 		break;
 	case 2:
-		str.Format(L"%s%dMB", str,total);
+		temp.Format(L"%f", outputLength);
+
+		if (outputLength >= 100)
+		{
+			str.Format(L"%s%.3sMB", str, temp);
+		}
+		else
+		{
+			str.Format(L"%s%.4sMB", str, temp);
+		};
 		break;
 	case 3:
-		str.Format(L"%s%dGB", str,total);
+		temp.Format(L"%f", outputLength);
+		if (outputLength >= 100)
+		{
+			str.Format(L"%s%.3sGB", str, temp);
+		}
+		else
+		{
+			str.Format(L"%s%.4sGB", str, temp);
+		}
 		break;
 	default:
 		break;
@@ -194,7 +270,7 @@ BEGIN_MESSAGE_MAP(COptComDlg, CDialogEx)
 	ON_WM_PAINT()
 	ON_WM_QUERYDRAGICON()
 	ON_BN_CLICKED(IDC_RADIO1, &COptComDlg::OnBnClickedRadio1)
-	//ON_WM_NCHITTEST()
+	ON_WM_NCHITTEST()
 	ON_CBN_SELCHANGE(IDC_COMBO1, &COptComDlg::OnCbnSelchangeCombo1)
 	ON_BN_CLICKED(IDC_SENDBUTTON,&COptComDlg::OnBnClickedSend)
 	ON_BN_CLICKED(IDC_BROWSEBUTTON, &COptComDlg::OnBnClickedBrowse)
@@ -772,12 +848,13 @@ void COptComDlg::OnBnClickedRadio1()
 	// TODO: 在此添加控件通知处理程序代码
 }
 
-UINT COptComDlg::OnNcHitTest(CPoint point)
+LRESULT COptComDlg::OnNcHitTest(CPoint point)
 {
 	int ret = CDialog::OnNcHitTest(point);
 
 	//if语句的前两行是用来禁止改变大小的，最后一行是用来禁止移动的
-	if(HTTOP == ret || HTBOTTOM == ret || HTLEFT == ret || HTRIGHT == ret)
+	if(HTTOP == ret || HTBOTTOM == ret || HTLEFT == ret || HTRIGHT == ret|| 
+		HTBOTTOMLEFT == ret|| HTBOTTOMRIGHT == ret || HTTOPLEFT == ret || HTTOPRIGHT == ret)
 		return HTCLIENT;
 	return ret;
 }
